@@ -15,11 +15,13 @@ LOG=/home/git/logs/post-receive.log
 
 # Read from stdin
 while read old new refname; do
-   echo "Post-receive hook for this repo: [$GL_REPO] $old $new $refname"
-   # Hit the Redmine Gitolite hook for this repo
-   curl -d "oldrev=$old&newrev=$new&refname=$refname&user=$GL_USER" "$REDMINE_SERVER/$HOOK_URL?project_id=$GL_REPO"
-   # Hit the fetch changesets URL
-   curl "$REDMINE_SERVER/$FETCH_URL?id=$GL_REPO&key=$KEY"
-   echo "Done."
-   echo ""
+  if [ "$GL_REPO" != "gitolite-admin" ]; then
+    echo "Post-receive hook for this repo: [$GL_REPO] $old $new $refname"
+    # Hit the Redmine Gitolite hook for this repo
+    curl -d "oldrev=$old&newrev=$new&refname=$refname&user=$GL_USER" "$REDMINE_SERVER/$HOOK_URL?project_id=$GL_REPO"
+    # Hit the fetch changesets URL
+    curl "$REDMINE_SERVER/$FETCH_URL?id=$GL_REPO&key=$KEY"
+    echo "Done."
+    echo ""
+  fi
 done
